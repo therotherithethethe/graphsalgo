@@ -131,8 +131,80 @@ window['dijkstraAlgorithm'] = () => {
         currentNode = graphList[currentNodeIndex];
         minDistance = minDistances.values[currentNodeIndex];
     }
-    alert(String(minDistances.getValueFromKey(graphList[graphList.length - 1])));
+    searchMinWay(minDistances);
 }
+/*const searchMinWay = (minDistances: ListDictionary<GraphNode, number>) => {
+    let currentIndex = graphList.length - 1;
+    let bestWay: number[] = [];
 
+    while(currentIndex != 0) {
+        bestWay.unshift(currentIndex);
+
+        let previousNodesIndexes: number[] = [];
+        graphList.forEach((node, index) => { //searching nodes indexes that contains current node
+            node.nextNodes.keys.forEach(nextNode => {
+                if(graphList[currentIndex] === nextNode) {
+                    previousNodesIndexes.push(index);
+                }
+            })
+        })
+
+        previousNodesIndexes.forEach(indexNum => {
+            let isDistancesIsEqual = minDistances.getValueFromKey(graphList[currentIndex]) - graphList[indexNum].nextNodes.getValueFromKey(graphList[currentIndex]) === minDistances.getValueFromKey(graphList[indexNum]);
+            if(isDistancesIsEqual) {
+                bestWay.unshift(indexNum);
+                currentIndex = indexNum;
+            }
+        })
+        previousNodesIndexes = [];
+    }
+    let bestWayString: string = "";
+    bestWay.forEach(nodeIndex => {
+        bestWayString += `${nodeIndex} (weight:${minDistances.getValueFromKey(graphList[nodeIndex])}) -> `;
+    })
+    bestWayString = bestWayString.slice(0, -4);
+
+    alert(String(minDistances.getValueFromKey(graphList[graphList.length - 1])) + `
+${bestWayString}`);
+}*/
+
+const searchMinWay = (minDistances: ListDictionary<GraphNode, number>) => {
+    let currentIndex = graphList.length - 1;
+    let bestWay = [currentIndex];
+
+
+    while (currentIndex !== 0) {
+        let previousIndex = -1;
+        let previousDistance = Infinity;
+
+
+        graphList.forEach((node, index) => {
+            node.nextNodes.keys.forEach(nextNode => {
+                if (graphList[currentIndex] === nextNode) {
+                    let distanceToCurrent = minDistances.getValueFromKey(node) + node.nextNodes.getValueFromKey(nextNode);
+                    if (distanceToCurrent < previousDistance) {
+                        previousDistance = distanceToCurrent;
+                        previousIndex = index;
+                    }
+                }
+            });
+        });
+
+
+        if (previousIndex !== -1) {
+            bestWay.unshift(previousIndex);
+            currentIndex = previousIndex;
+        } else {
+            console.error("Error No valid path found.");
+            return;
+        }
+    }
+
+    // Constructing the path string representation
+    let bestWayString = bestWay.map(nodeIndex => `${nodeIndex} (weight:${minDistances.getValueFromKey(graphList[nodeIndex])})`).join(" -> ");
+
+    alert(`Total Weight: ${minDistances.getValueFromKey(graphList[graphList.length - 1])}
+Path: ${bestWayString}`);
+}
 
 

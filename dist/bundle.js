@@ -294,7 +294,76 @@ window['dijkstraAlgorithm'] = function () {
         currentNode = graphList[currentNodeIndex];
         minDistance = minDistances.values[currentNodeIndex];
     }
-    alert(String(minDistances.getValueFromKey(graphList[graphList.length - 1])));
+    searchMinWay(minDistances);
+};
+/*const searchMinWay = (minDistances: ListDictionary<GraphNode, number>) => {
+    let currentIndex = graphList.length - 1;
+    let bestWay: number[] = [];
+
+    while(currentIndex != 0) {
+        bestWay.unshift(currentIndex);
+
+        let previousNodesIndexes: number[] = [];
+        graphList.forEach((node, index) => { //searching nodes indexes that contains current node
+            node.nextNodes.keys.forEach(nextNode => {
+                if(graphList[currentIndex] === nextNode) {
+                    previousNodesIndexes.push(index);
+                }
+            })
+        })
+
+        previousNodesIndexes.forEach(indexNum => {
+            let isDistancesIsEqual = minDistances.getValueFromKey(graphList[currentIndex]) - graphList[indexNum].nextNodes.getValueFromKey(graphList[currentIndex]) === minDistances.getValueFromKey(graphList[indexNum]);
+            if(isDistancesIsEqual) {
+                bestWay.unshift(indexNum);
+                currentIndex = indexNum;
+            }
+        })
+        previousNodesIndexes = [];
+    }
+    let bestWayString: string = "";
+    bestWay.forEach(nodeIndex => {
+        bestWayString += `${nodeIndex} (weight:${minDistances.getValueFromKey(graphList[nodeIndex])}) -> `;
+    })
+    bestWayString = bestWayString.slice(0, -4);
+
+    alert(String(minDistances.getValueFromKey(graphList[graphList.length - 1])) + `
+${bestWayString}`);
+}*/
+var searchMinWay = function (minDistances) {
+    var currentIndex = graphList.length - 1;
+    var bestWay = [currentIndex];
+    var _loop_1 = function () {
+        var previousIndex = -1;
+        var previousDistance = Infinity;
+        graphList.forEach(function (node, index) {
+            node.nextNodes.keys.forEach(function (nextNode) {
+                if (graphList[currentIndex] === nextNode) {
+                    var distanceToCurrent = minDistances.getValueFromKey(node) + node.nextNodes.getValueFromKey(nextNode);
+                    if (distanceToCurrent < previousDistance) {
+                        previousDistance = distanceToCurrent;
+                        previousIndex = index;
+                    }
+                }
+            });
+        });
+        if (previousIndex !== -1) {
+            bestWay.unshift(previousIndex);
+            currentIndex = previousIndex;
+        }
+        else {
+            console.error("Error No valid path found.");
+            return { value: void 0 };
+        }
+    };
+    while (currentIndex !== 0) {
+        var state_1 = _loop_1();
+        if (typeof state_1 === "object")
+            return state_1.value;
+    }
+    // Constructing the path string representation
+    var bestWayString = bestWay.map(function (nodeIndex) { return "".concat(nodeIndex, " (weight:").concat(minDistances.getValueFromKey(graphList[nodeIndex]), ")"); }).join(" -> ");
+    alert("Total Weight: ".concat(minDistances.getValueFromKey(graphList[graphList.length - 1]), "\nPath: ").concat(bestWayString));
 };
 
 })();
